@@ -2,7 +2,9 @@ import streamlit as st
 import math
 import graphviz
 from bogopath import *
-
+import plotly.express as px
+import scipy
+import pandas as pd
 # py -3.12 -m streamlit run streamlit_app.py
 
 st.write("""
@@ -10,7 +12,7 @@ st.write("""
 This is a demo of the bogosort algorithm where you can enter your own custom graph and the algorithm will try to solve it.
 """)
 
-edges = st.slider('how many edges do you want?', 1, 10, 1)
+edges = st.slider('how many edges do you want?', 1, 10, 2)
     
 cpaths = st.slider("""
 how many possible simple paths will it have? 
@@ -49,11 +51,12 @@ st.graphviz_chart(f)
 vertex_start="a"
 vertex_end="b"
 
-limit=10000
+limit=2000
 if edges > 5:
-    limit=5000
-number_of_iterations=st.slider('how many times to run the algorithm?', 1, limit, 1000)
-
+    limit=500
+number_of_iterations=st.slider('how many times to run the algorithm?', 0, limit, 500, 50)
+if number_of_iterations == 0:
+    number_of_iterations = 1
 
 if st.button('Run Algorithm'):
     itterations = []
@@ -71,10 +74,20 @@ if st.button('Run Algorithm'):
         itterations.append(z)
 
 
-    st.write(f"""
-        ## Results
-        #### Average Iterations: {sum(itterations)/len(itterations)} - {len(itterations)}/{sum(itterations)}
-        #### Expected Iterations: {sum(math.comb(edges, x) for x in range(1, edges+1))/cpaths}
-        #### Longest Iteration: {max(itterations)}
-        #### Shortest Iteration: {min(itterations)}
-    """)
+    # graph the histogram
+    df = px.data.tips()
+    df = pd.DataFrame({'value': itterations})
+    fig = px.histogram(df, x="value", histnorm='probability density', color_discrete_sequence=[tc], marginal="box"
+)
+    fig.update_layout(
+        title="Number of Iterations to find the correct path",
+        xaxis_title="Iterations",
+        yaxis_title="Frequency",
+    )
+    st.plotly_chart(fig)
+    col1, col2, col3 = st.columns(3)
+
+
+    col1.metric(label="Average Iterations vs Expected", value=str(sum(itterations)/len(itterations)), delta=str((sum(math.comb(edges, x) for x in range(1, edges+1))/cpaths)-(sum(itterations)/len(itterations))))
+    col2.metric(label="Shortest Iteration", value=str(min(itterations)))
+    col3.metric(label="Longest Iteration", value=str(max(itterations)))
