@@ -3,13 +3,12 @@ import math
 from collections import Counter
 
 def bogopath(g, vertex_start, vertex_end):
-    global z
     z=0
     path = []
     while check_path(path, vertex_start, vertex_end) == False:
         z+=1
         path = random_subgraph(g)
-    return path
+    return [path, z]
 
 def check_path(path, vertex_start, vertex_end):
     if len(path) == 0:
