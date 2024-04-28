@@ -59,6 +59,8 @@ if number_of_iterations == 0:
     number_of_iterations = 1
 
 if st.button('Run Algorithm'):
+    progress_text = "Running the algorithm..."
+    progress_bar = st.progress(0, text=progress_text)  # Create a progress bar
     itterations = []
 
     for i in (range(number_of_iterations)):
@@ -70,15 +72,12 @@ if st.button('Run Algorithm'):
             for edge in path:
                 f.edge(edge[0], edge[1], color='blue')  # Change the color of the edge
 
-
         itterations.append(z)
-
-
+        progress_bar.progress((i + 1) / number_of_iterations, text=progress_text)  # Update the progress bar
     # graph the histogram
     df = px.data.tips()
     df = pd.DataFrame({'value': itterations})
-    fig = px.histogram(df, x="value", histnorm='probability density', color_discrete_sequence=[tc], marginal="box"
-)
+    fig = px.histogram(df, x="value", histnorm='probability density', color_discrete_sequence=[tc], marginal="box")
     fig.update_layout(
         title="Number of Iterations to find the correct path",
         xaxis_title="Iterations",
@@ -86,7 +85,6 @@ if st.button('Run Algorithm'):
     )
     st.plotly_chart(fig)
     col1, col2, col3 = st.columns(3)
-
 
     col1.metric(label="Average Iterations vs Expected", value=str(sum(itterations)/len(itterations)), delta=str((sum(math.comb(edges, x) for x in range(1, edges+1))/cpaths)-(sum(itterations)/len(itterations))))
     col2.metric(label="Shortest Iteration", value=str(min(itterations)))
