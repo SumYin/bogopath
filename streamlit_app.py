@@ -8,8 +8,8 @@ import pandas as pd
 # py -3.12 -m streamlit run streamlit_app.py
 
 st.write("""
-# Bogo-Sort Demo
-This is a demo of the bogosort algorithm where you can enter your own custom graph and the algorithm will try to solve it.
+# Bogo-Path Demo
+This is a demo of the bogopath algorithm where you can enter your own custom graph and the algorithm will try to solve it.
 """)
 
 edges = st.slider('how many edges do you want?', 1, 10, 2)
